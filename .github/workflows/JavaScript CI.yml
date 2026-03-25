@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   security-events: write
+  actions: read
 
 jobs:
 
@@ -16,11 +17,14 @@ jobs:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
 
+    # ✅ Avoid permission issue on fork PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 🧹 Free disk space (avoid CodeQL issues)
+    # 🧹 Free disk space
     - name: Free disk space
       run: |
         sudo rm -rf /usr/share/dotnet
@@ -31,7 +35,7 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: javascript
-        enable-incremental: false   # ✅ Fix for your error
+        enable-incremental: false   # ✅ Fix disk issue
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
@@ -58,5 +62,6 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+   
     - name: Run Tests
       run: npm test || true
