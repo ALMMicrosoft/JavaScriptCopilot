@@ -13,3 +13,6 @@ app.get('/user', (req, res) => {
   res.send({ query, params: [id] });
 });
 const password = process.env.APP_PASSWORD;
+if (!password) {
+  throw new Error('APP_PASSWORD environment variable is not set');
+}
