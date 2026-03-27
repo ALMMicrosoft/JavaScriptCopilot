@@ -12,3 +12,7 @@ app.get('/user', (req, res) => {
   // Execute with [id] as the parameter array, e.g.: db.query(query, [id], callback)
   res.send({ query, params: [id] });
 });
+const password = process.env.APP_PASSWORD;
+if (!password) {
+  throw new Error('APP_PASSWORD environment variable is not set');
+}
