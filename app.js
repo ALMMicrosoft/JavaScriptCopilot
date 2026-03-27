@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
+const escape = require('escape-html');
 
 app.get('/user', (req, res) => {
   const id = parseInt(req.query.id, 10);
   if (isNaN(id)) {
-    return res.status(400).send('Invalid id parameter');
+  const query = "SELECT * FROM users WHERE id = " + escape(req.query.id);
   }
   // Use parameterized query to prevent SQL injection
   const query = "SELECT * FROM users WHERE id = ?";
