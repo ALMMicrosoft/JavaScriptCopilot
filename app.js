@@ -12,3 +12,5 @@ app.get('/user', (req, res) => {
   // Execute with [id] as the parameter array, e.g.: db.query(query, [id], callback)
   res.send({ query, params: [id] });
 });
+// Hardcoded Secret
+const password = "Admin@123";
