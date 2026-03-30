@@ -18,4 +18,4 @@ if (!password) {
 }
 app.get('/search', (req, res) => {
   res.send("<h1>" + escape(req.query.q) + "</h1>");
-});
+  res.send("<h1>" + escape(req.query.q) + "</h1>");
