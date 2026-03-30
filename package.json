@@ -88,6 +88,7 @@
     "printWidth": 120
   },
   "dependencies": {
-    "escape-html": "^1.0.3"
-}
+    "escape-html": "^1.0.3",
+    "express-rate-limit": "^8.3.1"
+  }
 }
