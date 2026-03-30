@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
 const escape = require('escape-html');
+const { execFile } = require('child_process');
+const path = require('path');
+const rateLimit = require('express-rate-limit');
+const SAFE_BASE_DIR = path.resolve(__dirname);
+const runLimiter = rateLimit({ windowMs: 60 * 1000, max: 20 });
 
 app.get('/user', (req, res) => {
   const id = parseInt(req.query.id, 10);
@@ -20,8 +25,18 @@ app.get('/search', (req, res) => {
   const q = typeof req.query.q === 'string' ? req.query.q : '';
   res.send("<h1>" + escape(q) + "</h1>");
 });
-// Command Injection
-app.get('/run', (req, res) => {
-  exec("ls " + req.query.dir);
-  res.send("Executed");
+// Command Injection - fixed: use execFile with separate args, validate input, and prevent path traversal
+app.get('/run', runLimiter, (req, res) => {
+  const dir = typeof req.query.dir === 'string' ? req.query.dir : '';
+  if (!dir || /[^a-zA-Z0-9_\-]/.test(dir)) {
+    return res.status(400).send('Invalid directory');
+  }
+  const resolvedDir = path.resolve(SAFE_BASE_DIR, dir);
+  if (!resolvedDir.startsWith(SAFE_BASE_DIR + path.sep)) {
+    return res.status(400).send('Invalid directory');
+  }
+  execFile('ls', [resolvedDir], (err, stdout) => {
+    if (err) return res.status(500).send('Error executing command');
+    res.send(escape(stdout));
+  });
 });
