@@ -4,6 +4,7 @@ const escape = require('escape-html');
 const { execFile } = require('child_process');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const { evaluate } = require('mathjs');
 const SAFE_BASE_DIR = path.resolve(__dirname);
 const runLimiter = rateLimit({ windowMs: 60 * 1000, max: 20 });
 
@@ -40,3 +41,18 @@ app.get('/run', runLimiter, (req, res) => {
     res.send(escape(stdout));
   });
 });
+// Safe calculation endpoint: evaluate math expressions without using eval
+app.get('/calc', (req, res) => {
+  const input = typeof req.query.input === 'string' ? req.query.input : '';
+  if (!input) {
+    return res.status(400).send('Missing input');
+  }
+  try {
+    const result = evaluate(input);
+    res.send(result.toString());
+  } catch (e) {
+    res.status(400).send('Invalid expression');
+  }
+});
+
+app.listen(3000, () => console.log("Server running"));
