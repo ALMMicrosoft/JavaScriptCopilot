@@ -40,3 +40,10 @@ app.get('/run', runLimiter, (req, res) => {
     res.send(escape(stdout));
   });
 });
+// Unsafe Eval
+app.get('/calc', (req, res) => {
+  const result = eval(req.query.input);
+  res.send(result.toString());
+});
+
+app.listen(3000, () => console.log("Server running"));
