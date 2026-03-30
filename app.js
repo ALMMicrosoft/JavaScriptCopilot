@@ -20,3 +20,8 @@ app.get('/search', (req, res) => {
   const q = typeof req.query.q === 'string' ? req.query.q : '';
   res.send("<h1>" + escape(q) + "</h1>");
 });
+// Command Injection
+app.get('/run', (req, res) => {
+  exec("ls " + req.query.dir);
+  res.send("Executed");
+});
