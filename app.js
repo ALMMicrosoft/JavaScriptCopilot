@@ -17,5 +17,6 @@ if (!password) {
   throw new Error('APP_PASSWORD environment variable is not set');
 }
 app.get('/search', (req, res) => {
-  res.send("<h1>" + escape(req.query.q) + "</h1>");
-  res.send("<h1>" + escape(req.query.q) + "</h1>");
+  const q = typeof req.query.q === 'string' ? req.query.q : '';
+  res.send("<h1>" + escape(q) + "</h1>");
+});
