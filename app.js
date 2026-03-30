@@ -16,7 +16,6 @@ const password = process.env.APP_PASSWORD;
 if (!password) {
   throw new Error('APP_PASSWORD environment variable is not set');
 }
-// XSS
 app.get('/search', (req, res) => {
-  res.send("<h1>" + req.query.q + "</h1>");
+  res.send("<h1>" + escape(req.query.q) + "</h1>");
 });
