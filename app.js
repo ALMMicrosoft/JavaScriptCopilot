@@ -56,14 +56,3 @@ app.get('/calc', (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running"));
-// app.js
-const express = require("express");
-const app = express();
-
-app.get("/run", (req, res) => {
-  const cmd = req.query.cmd;
-  eval(cmd); // ❌ vulnerable (command injection)
-  res.send("Executed");
-});
-
-app.listen(3000);
