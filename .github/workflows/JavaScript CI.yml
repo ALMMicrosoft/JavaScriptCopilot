@@ -1,4 +1,4 @@
-name: JavaScript CI with CodeQL
+name: JavaScript CI with CodeQL and SonarQube
 
 on:
   push:
@@ -65,3 +65,33 @@ jobs:
    
     - name: Run Tests
       run: npm test || true
+
+# 📊 SonarQube Code Quality Analysis
+  sonarqube:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for SonarQube to detect new code correctly
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Tests with coverage
+      run: npm run cucumber || true
+
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v6
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
