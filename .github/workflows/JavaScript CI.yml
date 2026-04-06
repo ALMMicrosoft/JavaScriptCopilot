@@ -97,6 +97,44 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
+    # 📈 Code Quality Metrics & Tech Debt Report
+    - name: SonarQube Quality Metrics Report
+      run: |
+        PROJECT_KEY="ALMMicrosoft_JavaScriptCopilot"
+        METRICS="bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,ncloc,sqale_index,sqale_debt_ratio,reliability_rating,security_rating,sqale_rating,new_bugs,new_vulnerabilities,new_code_smells"
+        echo "============================================"
+        echo "  SonarQube Code Quality & Tech Debt Report"
+        echo "============================================"
+        curl -sf -u "${SONAR_TOKEN}:" \
+          "${SONAR_HOST_URL}/api/measures/component?component=${PROJECT_KEY}&metricKeys=${METRICS}" \
+        | python3 -c "
+        import sys, json
+        data = json.load(sys.stdin)
+        measures = {m['metric']: m.get('value','N/A') for m in data['component']['measures']}
+        labels = {
+          'ncloc':                   'Lines of Code',
+          'bugs':                    'Bugs',
+          'vulnerabilities':         'Vulnerabilities',
+          'code_smells':             'Code Smells',
+          'coverage':                'Test Coverage (%)',
+          'duplicated_lines_density':'Duplicated Lines (%)',
+          'sqale_index':             'Technical Debt (mins)',
+          'sqale_debt_ratio':        'Technical Debt Ratio (%)',
+          'reliability_rating':      'Reliability Rating (1=A)',
+          'security_rating':         'Security Rating (1=A)',
+          'sqale_rating':            'Maintainability Rating (1=A)',
+          'new_bugs':                'New Bugs',
+          'new_vulnerabilities':     'New Vulnerabilities',
+          'new_code_smells':         'New Code Smells',
+        }
+        for key, label in labels.items():
+            print(f'  {label:<35} {measures.get(key, \"N/A\")}')
+        print('============================================')
+        "
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
     # 🚦 Quality Gate: fails the job if the Quality Gate is not passed
     - name: SonarQube Quality Gate Check
       uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
