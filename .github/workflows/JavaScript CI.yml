@@ -100,7 +100,7 @@ jobs:
     # 📈 Code Quality Metrics & Tech Debt Report
     - name: SonarQube Quality Metrics Report
       run: |
-        PROJECT_KEY="ALMMicrosoft_JavaScriptCopilot"
+        PROJECT_KEY="Demo_JavaScriptCopilot"
         METRICS="bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,ncloc,sqale_index,sqale_debt_ratio,reliability_rating,security_rating,sqale_rating,new_bugs,new_vulnerabilities,new_code_smells"
         echo "============================================"
         echo "  SonarQube Code Quality & Tech Debt Report"
